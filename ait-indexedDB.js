@@ -136,7 +136,7 @@
                             logic = ' && ';
                         }
                     }
-                }
+                } 
 
                 var returnData = [];
                 var index = 0;
