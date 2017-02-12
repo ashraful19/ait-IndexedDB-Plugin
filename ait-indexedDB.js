@@ -35,6 +35,9 @@
         aitApp.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
         if (!aitApp.indexedDB) {
             alert('Your Device doesn\'t support a stable version of IndexedDB.');
+            if (aitApp.params.initCallback) {
+                aitApp.params.initCallback(0);
+            }
         } else {
             aitApp.db;
             aitApp.processing = 1;
@@ -46,7 +49,9 @@
             request.onsuccess = function (event) {
                 aitApp.db = request.result;
                 aitApp.processing = 0;
-                console.log('DB Initialized: ' + aitApp.db);
+                if (aitApp.params.initCallback) {
+                    aitApp.params.initCallback(1);
+                }
             };
             request.onupgradeneeded = function (event) {
                 aitApp.db = event.target.result;
@@ -76,7 +81,9 @@
                 } else {
                     aitApp.processing = 0;
                 }
-                console.log('On Upgrade Called');
+                if(aitApp.params.initCallback){
+                    aitApp.params.initCallback(2);
+                }
             }
         }
     }
@@ -136,7 +143,7 @@
                             logic = ' && ';
                         }
                     }
-                } 
+                }
 
                 var returnData = [];
                 var index = 0;
@@ -172,7 +179,11 @@
                 request.onsuccess = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
-                        options.postCallback(event.target.result);
+                        if(event.target.result){
+                            options.postCallback(event.target.result);
+                        }else{
+                            options.postCallback(false);
+                        }
                     }
                 }
                 request.onerror = function (event) {
@@ -259,7 +270,7 @@
                 request.onerror = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
-                        options.postCallback(0);
+                        options.postCallback(false);
                     }
                 }
             }
@@ -278,14 +289,12 @@
                     if (options.postCallback) {
                         options.postCallback(true);
                     }
-                    console.log("Deleted Successfully");
                 };
                 request.onerror = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
                         options.postCallback(false);
                     }
-                    console.log("Delete Failed");
                 };
             }
 
@@ -325,7 +334,7 @@
                 console.log('Abort Deleting Store ' + options.storename);
             };
         },
-        deleteDatabase: function () {
+        deleteDatabase: function (options) {
             if (aitApp.db == undefined || aitApp.processing == 1) {
                 setTimeout(function () {
                     aitIndexedDB.deleteDatabase();
@@ -336,15 +345,21 @@
                 var request = aitApp.indexedDB.deleteDatabase(aitApp.params.dbname);
                 request.onerror = function (event) {
                     aitApp.processing = 0;
-                    console.log("Error deleting database.");
+                    if (options.postCallback) {
+                        options.postCallback({status: 0,msg: 'Error deleting database.'});
+                    }
                 };
                 request.onsuccess = function (event) {
                     aitApp.processing = 0;
-                    console.log("Database deleted successfully");
+                    if (options.postCallback) {
+                        options.postCallback({status: 1,msg: 'Database deleted successfully'});
+                    }
                 };
                 request.onblocked = function () {
                     aitApp.processing = 0;
-                    console.log("Couldn't delete database due to the operation being blocked");
+                    if (options.postCallback) {
+                        options.postCallback({status: 0,msg: 'Couldn\'t delete database due to the operation being blocked'});
+                    }
                 };
             }
         },
