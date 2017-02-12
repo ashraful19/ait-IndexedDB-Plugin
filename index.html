@@ -1,0 +1,249 @@
+<html>
+    <head>
+        <title>AIT-IndexedDB Plugin</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="ait-indexedDB.js"></script>
+        <!--For Bootstrap-->
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    </head>
+
+    <body>
+        <div class="container" style="margin-top: 25px;">
+            <div class="row init-result">
+                <pre></pre>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button class="btn btn-primary" onclick="readAll()">
+                        Read All
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 read-all-result">
+                    <pre></pre>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-lg-12 form-inline">
+                    <label class="control-label">Id of the row you want to read</label>
+                    <input class="form-control" name="read-single-id" type="text" placeholder=""/>
+                    <button class="btn btn-primary" onclick="readSingle()">
+                        Read Single
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 read-single-result">
+                    <pre></pre>
+                </div>
+            </div>
+
+            <hr/>
+            <div class="row">
+                <div class="col-lg-12 form-inline">
+                    <input class="form-control" name="insert-product-name" type="text" placeholder="Product name"/>
+                    <input class="form-control" name="insert-product-price" type="text" placeholder="Product price"/>
+                    <button class="btn btn-primary" onclick="insert()">
+                        Insert
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 insert-result">
+                    <pre></pre>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button class="btn btn-primary" onclick="countAll()">
+                        Count All
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 count-all-result">
+                    <pre></pre>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-lg-12 form-inline">
+                    <input class="form-control" name="delete-single-id" type="text" placeholder="Id of the row you want to delete"/>
+                    <button class="btn btn-primary" onclick="deleterow()">
+                        Delete
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 delete-single-result">
+                    <pre></pre>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-lg-12 form-inline">
+                    <label class="control-label">Product id to be updated</label>
+                    <input class="form-control" name="update-id" type="text" placeholder=""/>
+                    <input class="form-control" name="update-name" type="text" placeholder="Product name"/>
+                    <input class="form-control" name="update-price" type="text" placeholder="Product price"/>
+                    <button class="btn btn-primary" onclick="update()">
+                        Update
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 update-result">
+                    <pre></pre>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button class="btn btn-primary" onclick="deleteDB()">
+                        Delete DB
+                    </button>
+                </div>
+                <br/><br/>
+                <div class="col-lg-12 db-delete-result">
+                    <pre></pre>
+                </div>
+            </div>
+
+        </div>
+        <script type="text/javascript">
+            var aitIndexedDB = new aitIndexedDB({
+                dbname: 'myIndexedDB',
+                dbversion: 1,
+                initialstores: [
+                    {
+                        name: 'app_config',
+                        key: 'name',
+                        autoincreament: false
+                    },
+                    {
+                        name: 'product',
+                        key: 'id',
+                        autoincreament: true,
+                        index: [
+                            {name: 'id', value: ['id']},
+                            {name: 'name', value: ['name']},
+                            {name: 'price', value: ['price']},
+                            {name: 'name_price', value: ['name', 'price']},
+                        ]
+                    }
+                ],
+                configtable: 'app_config',
+                configdata: [
+                    {name: 'datasync', value: '0'},
+                    {name: 'appname', value: 'myIndexedDB_App'}
+                ],
+                initCallback: function (response) {
+                    if (response == 0) {
+                        $('.init-result pre').html('Your Browser does not support InexedDB');
+                    } else if (response == 1) {
+                        $('.init-result pre').html('DB Initialization Successful');
+                    } else if (response == 2) {
+                        $('.init-result pre').html('On Upgrade Called');
+                    }
+                }
+            });
+
+
+            function readAll() {
+                aitIndexedDB.readAll({
+                    storename: 'product',
+                    postCallback: function (result) {
+                        if (result.length == 0) {
+                            $('.read-all-result pre').html('No Data in product table');
+                        } else {
+                            $('.read-all-result pre').html(JSON.stringify(result));
+                        }
+                    }
+                });
+            }
+            function readSingle() {
+                var id = $('input[name="read-single-id"]').val();
+                aitIndexedDB.read({
+                    storename: 'product',
+                    keyValue: parseInt(id),
+                    postCallback: function (result) {
+                        if (!result || result.length == 0) {
+                            $('.read-single-result pre').html('Not Found');
+                        } else {
+                            $('.read-single-result pre').html(JSON.stringify(result));
+                        }
+                    }
+                });
+            }
+
+            function countAll() {
+                aitIndexedDB.countAll({
+                    storename: 'product',
+                    postCallback: function (result) {
+                        $('.count-all-result pre').html(result);
+                    }
+                });
+            }
+
+            function insert() {
+                var name = $('input[name="insert-product-name"]').val();
+                var price = $('input[name="insert-product-price"]').val();
+                aitIndexedDB.insert({
+                    storename: 'product',
+                    data: {
+                        name: name,
+                        price: price,
+                    },
+                    postCallback: function (result) {
+                        $('.insert-result pre').html('Inserted Product ID : ' + result);
+                    }
+                })
+            }
+
+            function deleterow() {
+                var id = $('input[name="delete-single-id"]').val();
+                aitIndexedDB.delete({
+                    storename: 'product',
+                    keyValue: parseInt(id),
+                    postCallback: function (result) {
+                        if (result) {
+                            $('.delete-single-result pre').html('Deleted Successfully');
+                        } else {
+                            $('.delete-single-result pre').html('Deleting Failed');
+                        }
+                    }
+                })
+            }
+
+            function update() {
+                var id = $('input[name="update-id"]').val();
+                var name = $('input[name="update-name"]').val();
+                var price = $('input[name="update-price"]').val();
+
+                aitIndexedDB.update({
+                    storename: 'product',
+                    data: {
+                        id: parseInt(id),
+                        name: name,
+                        price: price
+                    },
+                    postCallback: function(result){
+                        if(result){
+                            $('.update-result pre').html('Updated row id : '+result);
+                        }else{
+                            $('.update-result pre').html('Update Failed');
+                        }
+                    }
+                })
+            }
+
+            function deleteDB() {
+                aitIndexedDB.deleteDatabase({
+                    postCallback: function (result) {
+                        $('.db-delete-result pre').html(result.msg);
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>
