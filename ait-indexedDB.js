@@ -93,17 +93,7 @@
                 if(options.index){
                     storeIndex = objectStore.index(options.index);
                 }
-//                var request = objectStore.getAll(undefined, options.limit);
-//                request.onsuccess = function (event) {
-//                    if (options.postCallback) {
-//                        options.postCallback(event.target.result);
-//                    }
-//                }
-//                request.onerror = function (event) {
-//                    if (options.postCallback) {
-//                        options.postCallback(false);
-//                    }
-//                }
+
                 var keyBound = null;
                 if (options.only && options.only.value) {
                     keyBound = aitApp.IDBKeyRange.only(options.only.value);
