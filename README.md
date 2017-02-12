@@ -2,7 +2,7 @@
 
 an easy to use simple CRUD Plugin for Indexed DB with some extra features.
 
-## Authors
+## Author Info
 
 * **Ashraful Islam Tushar**  - [LinkedIn](https://www.linkedin.com/in/ashraful-islam-tushar/)
 
