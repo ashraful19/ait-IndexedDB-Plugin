@@ -88,9 +88,12 @@
                 }, 100);
             } else {
                 aitApp.processing = 1;
+                if (options.preCallback) {
+                    options.preCallback(true);
+                }
                 var objectStore = aitApp.db.transaction(options.storename).objectStore(options.storename);
                 var storeIndex = objectStore;
-                if(options.index){
+                if (options.index) {
                     storeIndex = objectStore.index(options.index);
                 }
 
@@ -121,12 +124,30 @@
                     options.direction = 'next';
                 }
 
+                // is search params are defined
+                var searchCondition = '';
+                if (options.search && options.search.length > 0) {
+                    var logic = '';
+                    for (var i = 0; i < options.search.length; i++) {
+                        searchCondition += logic + 'cursor.value.' + options.search[i].column + '.toUpperCase().indexOf("' + options.search[i].value.toUpperCase() + '") !== -1';
+                        if (options.search[i].logic == 'OR') {
+                            logic = ' || ';
+                        } else {
+                            logic = ' && ';
+                        }
+                    }
+                } 
+
                 var returnData = [];
                 var index = 0;
                 storeIndex.openCursor(keyBound, options.direction).onsuccess = function (event) {
                     var cursor = event.target.result;
                     if (cursor && ((options.limit != undefined && index < options.limit) || options.limit == undefined)) {
-                        returnData.push(cursor.value);
+                        if (searchCondition.trim().length > 0) {
+                            eval('if(' + searchCondition.trim() + '){ returnData.push(cursor.value); }');
+                        } else {
+                            returnData.push(cursor.value);
+                        }
                         index += 1;
                         cursor.continue();
                     } else {
