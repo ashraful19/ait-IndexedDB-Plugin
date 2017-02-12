@@ -60,7 +60,7 @@
                     for (var i in aitApp.params.initialstores) {
                         objectStore = aitApp.db.createObjectStore(aitApp.params.initialstores[i].name, {
                             keyPath: aitApp.params.initialstores[i].key,
-                            autoIncrement: aitApp.params.initialstores[i].autoincreament
+                            autoIncrement: aitApp.params.initialstores[i].autoincrement
                         });
                         if (aitApp.params.initialstores[i].index) {
                             var indexToCreate = aitApp.params.initialstores[i].index;
