@@ -2,9 +2,9 @@
 
 an easy to use simple CRUD Plugin for Indexed DB with some extra features.
 
-## Author Info
+### Prerequisites
 
-* **Ashraful Islam Tushar**  - [LinkedIn](https://www.linkedin.com/in/ashraful-islam-tushar/)
+This plugin does not have any dependency. So as long as your browser supports indexedDB, you are good to go.
 
 ## Getting Started
 
@@ -13,45 +13,65 @@ Load the js file before initialization.
 ```
 <script type="text/javascript" src="ait-indexedDB.js"></script>
 ```
-
-### Prerequisites
-
-This plugin does not have any dependency. So as long as your browser supports indexedDB, you are good to go.
-
-### Initialization
+### API Initialization
 
 After including the js file, we need to initialize the indexeddb.
 
-to initialize,
+to initialize, Creates a new `aitIndexedDB` instance.
 
+```js
+var aitIndexedDB = new aitIndexedDB();
 ```
+#### Arguments
+
+- `options` - Required - A plain JavaScript object that contains the
+configuration options.
+
+#### Options
+
+- `dbname` - Optional - A string that specifies the database name. if not provided, a db named `aitdb` will be created
+- `dbversion` - Optional - A number that specifies the database version. Default is 1.
+- `initialstores` - Required - A javascript array of objects, where each object contains the information about each object store to be created. if not provided, no stores will be created and stores cannot be created later.
+    - `name` - Required - A String that specifies the name of the store.
+    - `key` - Optional - A string that specified the primary key/keypath of that store
+    - `autoincrement` - Optional - A Boolean value that specifies whether the primary of the store will be auto increment or not.
+    - `index` - Optional - A javascript array of Objects which contains the information for each index to be created for each store.
+        - `name` - Required - A String that specifies the name of the index.
+        - `value` - Required - An array that contains the column names. can be a single column or can be multiple column name separated by comma.
+- `configtable` - Optional - A string that specifies the store name which will be used for site/app configuration informations. the provided name must be included in the `initialstores` parameters.
+- `configdata` - Optional - A javascript array of objects that is to be inserted in the mentioned `configtable` when the application runs for the first time (when the database is created).
+- `initCallback` - Callback - A callback function that triggers when the db is initialized. receives a response variable. which value will be 0 (if initialization fails), 1 (if initialization successful), 2 (if the db created for the the first time)
+
+#### Example
+
+```js
 var aitIndexedDB = new aitIndexedDB({
-    dbname: 'myIndexedDB', // the name of your database 
-    dbversion: 1, // version of your database #optional
-    initialstores: [ // these are the stores/tables will be created when the database initialized for the first time. you will have to mention all the tables/stores (you are going to use) name and other informations here
+    dbname: 'myIndexedDB',
+    dbversion: 1,
+    initialstores: [ 
         {
             name: 'app_config',
-            key: 'name', //the primary key
-            autoincrement: false // autoincrement key or not
+            key: 'name', 
+            autoincrement: false
         },
         {
             name: 'product',
             key: 'id',
             autoincrement: true,
-            index: [ //these are the indexes which you are going to use for fetching data
+            index: [ 
                 {name: 'id', value: ['id']},
-                {name: 'name', value: ['name']}, //for example you can now find a product by its name
-                {name: 'price', value: ['price']}, //or by its price
-                {name: 'name_price', value: ['name', 'price']}, // or by both of them together, note that if you want to search any row by multiple columns value, you must create a compound index by mentioning all the columns in the value array like this
+                {name: 'name', value: ['name']},
+                {name: 'price', value: ['price']},
+                {name: 'name_price', value: ['name', 'price']},
             ]
         }
     ],
-    configtable: 'app_config', // if you want to have a config table from the tables mentioned, you may want to pass the store/table name here
-    configdata: [ //so you can also set some initial values to that config store/table 
+    configtable: 'app_config',
+    configdata: [
         {name: 'datasync', value: '0'},
         {name: 'appname', value: 'myIndexedDB_App'}
     ],
-    initCallback: function (response) { //the init callback, will be triggered when the app initialized the database, a parameter is passed according to the status
+    initCallback: function (response) { 
         if (response == 0) {
             alert('Your Browser does not support InexedDB');
         } else if (response == 1) {
@@ -62,3 +82,7 @@ var aitIndexedDB = new aitIndexedDB({
     }
 });
 ```
+
+## Author Info
+
+* **Ashraful Islam Tushar**  - [LinkedIn](https://www.linkedin.com/in/ashraful-islam-tushar/)
