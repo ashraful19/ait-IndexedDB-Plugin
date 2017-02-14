@@ -10,7 +10,7 @@ This plugin does not have any dependency. So as long as your browser supports in
 
 Load the js file before initialization.
 
-```
+```html
 <script type="text/javascript" src="ait-indexedDB.js"></script>
 ```
 ### API Initialization
@@ -24,7 +24,7 @@ var aitIndexedDB = new aitIndexedDB();
 ```
 #### Arguments
 
-- `options` - Required - A plain JavaScript object that contains the
+- `options` - Optional - A plain JavaScript object that contains the
 configuration options.
 
 #### Options
@@ -82,6 +82,32 @@ var aitIndexedDB = new aitIndexedDB({
     }
 });
 ```
+
+## Available resources and methods
+
+- ### readAll()
+
+    - #### Arguments
+
+        - `options` - Required - A plain JavaScript object that contains the
+        configuration options.
+    
+    - #### Options
+
+        - `storename` - Required - A string that specifies the store name from where we are going to read data
+        - `index` - Optional - A string that specifies the index name if we are going to fetch data based on an index other than the keypath/primary key
+        - `only` - Optional - A javascript Object
+            - `value` - Required - an array of the values of condition 'only'
+        - `lowerbound` - Optional - A javascript Object.
+            - `value` - Required - an array of the values of condition 'lowerbound'
+            - `notequal` - Optional - Boolean, if `true` condition will be like > and if false then condition will be like >=
+        - `upperbound` - Optional - A javascript Object.
+            - `value` - Required - an array of the values of condition 'upperbound'
+            - `notequal` - Optional - Boolean, if `true` condition will be like < and if false then condition will be like <=
+        - `direction` - Optional - Values can be `next` or `prev` . Default is `next` . this represents the direction of reading. its more like mysql ASC and DESC order
+        - `limit` - Optional - An Integer number that represents the number is rows we should read.
+        - `postCallback` - Callback function that will receive the result array after the read operation is done.
+    
 
 ## Author Info
 
