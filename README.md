@@ -85,51 +85,51 @@ var aitIndexedDB = new aitIndexedDB({
 
 ## Available resources and methods
 
-- ### `readAll()`
+### `readAll()`
 
-    - #### Arguments
+#### Arguments
 
-        - `options` - Required - A plain JavaScript object that contains the
-        configuration options.
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
     
-    - #### Options
+#### Options
 
-        - `storename` - Required - A string that specifies the store name from where we are going to read data
-        - `index` - Optional - A string that specifies the index name if we are going to fetch data based on an index other than the keypath/primary key
-        - `only` - Optional - A javascript Object
-            - `value` - Required - an array of the values of condition 'only'
-        - `lowerbound` - Optional - A javascript Object. (won't work if `only` parameter is also passed)
-            - `value` - Required - an array of the values of condition 'lowerbound'
-            - `notequal` - Optional - Boolean, if `true` condition will be like > and if false then condition will be like >=
-        - `upperbound` - Optional - A javascript Object.  (won't work if `only` parameter is also passed)
-            - `value` - Required - an array of the values of condition 'upperbound'
-            - `notequal` - Optional - Boolean, if `true` condition will be like < and if false then condition will be like <=
-        - `direction` - Optional - Values can be `next` or `prev` . Default is `next` . this represents the direction of reading. its more like mysql ASC and DESC order
-        - `limit` - Optional - An Integer number that represents the number is rows we should read.
-        - `search` - Optional - An array of objects, each object contains the following,
-            - `column` - Required - the name of the column whose value we are using for search
-            - `value` - Required - the value which we are going to match with the mentioned colmns value
-            - `logic` - Optional - Logic which will be place between multiple search conditions. its like mysql `OR WHERE` and `AND WHERE`. Default is `AND`.
-            - `condition` - Optional - condition for each search operation, like the passed `value` is going to fully matched or partially. By default it will match the passed value exactly with the mentioned column value. to match partially we need to pass `LIKE` here.
-        - `postCallback` - Callback function that will receive the result array after the read operation is done.
-    - #### Example
-        ```js
-        aitIndexedDB.readAll({
-            storename: 'app_config',
-            index: 'price',
-            only: {value: ['50']}, // if you use `only`, `lowerbound` and `upperbound` won't be counted (if you use them too)
-            lowerbound: {value: [25], notequal: false},
-            upperbound: {value: [100], notequal: false},
-            limit: 20,
-            search: [
-                {column: 'name', value: 'Test', condition: 'LIKE', logic: 'OR'},
-                {column: 'name', value: 'last_updated', logic: 'OR'}
-            ],
-            postCallback: function (data) {
-                //Do something with the result
-            }
-        });
-        ```
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `index` - Optional - A string that specifies the index name if we are going to fetch data based on an index other than the keypath/primary key
+    - `only` - Optional - A javascript Object
+        - `value` - Required - an array of the values of condition 'only'
+    - `lowerbound` - Optional - A javascript Object. (won't work if `only` parameter is also passed)
+        - `value` - Required - an array of the values of condition 'lowerbound'
+        - `notequal` - Optional - Boolean, if `true` condition will be like > and if false then condition will be like >=
+    - `upperbound` - Optional - A javascript Object.  (won't work if `only` parameter is also passed)
+        - `value` - Required - an array of the values of condition 'upperbound'
+        - `notequal` - Optional - Boolean, if `true` condition will be like < and if false then condition will be like <=
+    - `direction` - Optional - Values can be `next` or `prev` . Default is `next` . this represents the direction of reading. its more like mysql ASC and DESC order
+    - `limit` - Optional - An Integer number that represents the number is rows we should read.
+    - `search` - Optional - An array of objects, each object contains the following,
+        - `column` - Required - the name of the column whose value we are using for search
+        - `value` - Required - the value which we are going to match with the mentioned colmns value
+        - `logic` - Optional - Logic which will be place between multiple search conditions. its like mysql `OR WHERE` and `AND WHERE`. Default is `AND`.
+        - `condition` - Optional - condition for each search operation, like the passed `value` is going to fully matched or partially. By default it will match the passed value exactly with the mentioned column value. to match partially we need to pass `LIKE` here.
+    - `postCallback` - Callback function that will receive the result array after the read operation is done.
+#### Example
+```js
+aitIndexedDB.readAll({
+    storename: 'app_config',
+    index: 'price',
+    only: {value: ['50']}, // if you use `only`, `lowerbound` and `upperbound` won't be counted (if you use them too)
+    lowerbound: {value: [25], notequal: false},
+    upperbound: {value: [100], notequal: false},
+    limit: 20,
+    search: [
+        {column: 'name', value: 'Test', condition: 'LIKE', logic: 'OR'},
+        {column: 'name', value: 'last_updated', logic: 'OR'}
+    ],
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
 
 ## Author Info
 
