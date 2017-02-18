@@ -271,7 +271,11 @@
             } else {
                 aitApp.processing = 1;
                 var objectStore = aitApp.db.transaction([options.storename], "readwrite").objectStore(options.storename);
-                var request = objectStore.put(options.data); //,aitApp.IDBKeyRange.only(options.keyValue)
+                if(options.keyValue){
+                    var request = objectStore.put(options.data, options.keyValue); //,aitApp.IDBKeyRange.only(options.keyValue)
+                }else{
+                    var request = objectStore.put(options.data); //,aitApp.IDBKeyRange.only(options.keyValue)
+                }
                 request.onsuccess = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
