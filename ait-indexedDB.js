@@ -81,7 +81,7 @@
                 } else {
                     aitApp.processing = 0;
                 }
-                if(aitApp.params.initCallback){
+                if (aitApp.params.initCallback) {
                     aitApp.params.initCallback(2);
                 }
             }
@@ -136,7 +136,13 @@
                 if (options.search && options.search.length > 0) {
                     var logic = '';
                     for (var i = 0; i < options.search.length; i++) {
-                        searchCondition += logic + 'cursor.value.' + options.search[i].column + '.toUpperCase().indexOf("' + options.search[i].value.toUpperCase() + '") !== -1';
+                        if (options.search[i].condition) {
+                            if (options.search[i].condition.toUpperCase() == 'LIKE') {
+                                searchCondition += logic + 'cursor.value.' + options.search[i].column + '.toUpperCase().indexOf("' + options.search[i].value.toUpperCase() + '") !== -1';
+                            }
+                        } else {
+                            searchCondition += logic + 'cursor.value.' + options.search[i].column + '.toUpperCase() == "' + options.search[i].value.toUpperCase() + '"';
+                        }
                         if (options.search[i].logic == 'OR') {
                             logic = ' || ';
                         } else {
@@ -144,7 +150,6 @@
                         }
                     }
                 }
-
                 var returnData = [];
                 var index = 0;
                 storeIndex.openCursor(keyBound, options.direction).onsuccess = function (event) {
@@ -179,9 +184,9 @@
                 request.onsuccess = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
-                        if(event.target.result){
+                        if (event.target.result) {
                             options.postCallback(event.target.result);
-                        }else{
+                        } else {
                             options.postCallback(false);
                         }
                     }
@@ -241,11 +246,17 @@
                     request.onsuccess = function (event) {
                         if (i == (total_data - 1)) {
                             aitApp.processing = 0;
+                            if (options.postCallback) {
+                                options.postCallback(true);
+                            }
                         }
                     };
                     request.onerror = function (event) {
                         if (i == (total_data - 1)) {
                             aitApp.processing = 0;
+                            if (options.postCallback) {
+                                options.postCallback(true);
+                            }
                         }
                     };
                 }
@@ -346,22 +357,154 @@
                 request.onerror = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
-                        options.postCallback({status: 0,msg: 'Error deleting database.'});
+                        options.postCallback({status: 0, msg: 'Error deleting database.'});
                     }
                 };
                 request.onsuccess = function (event) {
                     aitApp.processing = 0;
                     if (options.postCallback) {
-                        options.postCallback({status: 1,msg: 'Database deleted successfully'});
+                        options.postCallback({status: 1, msg: 'Database deleted successfully'});
                     }
                 };
                 request.onblocked = function () {
                     aitApp.processing = 0;
                     if (options.postCallback) {
-                        options.postCallback({status: 0,msg: 'Couldn\'t delete database due to the operation being blocked'});
+                        options.postCallback({status: 0, msg: 'Couldn\'t delete database due to the operation being blocked'});
                     }
                 };
             }
         },
+        customFilter: function (options) {
+            if (aitApp.db == undefined || aitApp.processing == 1) {
+                setTimeout(function () {
+                    aitIndexedDB.customFilter(options);
+                }, 100);
+            } else {
+                aitApp.processing = 1;
+                if (options.preCallback) {
+                    options.preCallback(true);
+                }
+                var objectStore = aitApp.db.transaction(options.storename).objectStore(options.storename);
+                var storeIndex = objectStore;
+                if (options.index) {
+                    storeIndex = objectStore.index(options.index);
+                }
+
+                var keyBound = null;
+                if (options.only && options.only.value) {
+                    keyBound = aitApp.IDBKeyRange.only(options.only.value);
+                } else if (options.lowerbound && options.lowerbound.value && options.upperbound && options.upperbound.value) {
+                    if (options.lowerbound.notequal != true) {
+                        options.lowerbound.notequal = false;
+                    }
+                    if (options.upperbound.notequal != true) {
+                        options.upperbound.notequal = false;
+                    }
+                    keyBound = aitApp.IDBKeyRange.bound(options.lowerbound.value, options.upperbound.value, options.lowerbound.notequal, options.upperbound.notequal);
+                } else if (options.lowerbound && options.lowerbound.value) {
+                    if (options.lowerbound.notequal != true) {
+                        options.lowerbound.notequal = false;
+                    }
+                    keyBound = aitApp.IDBKeyRange.lowerBound(options.lowerbound.value, options.lowerbound.notequal);
+                } else if (options.upperbound && options.upperbound.value) {
+                    if (options.upperbound.notequal != true) {
+                        options.upperbound.notequal = false;
+                    }
+                    keyBound = aitApp.IDBKeyRange.upperBound(options.upperbound.value, options.upperbound.notequal);
+                }
+
+                if (options.direction == undefined) {
+                    options.direction = 'next';
+                }
+
+                // is search params are defined
+                var searchCondition = '';
+                if (options.search && options.search.length > 0) {
+                    var logic = '';
+                    for (var i = 0; i < options.search.length; i++) {
+                        if (options.search[i].condition) {
+                            if (options.search[i].condition.toUpperCase() == 'LIKE') {
+                                searchCondition += logic + 'cursor.value.' + options.search[i].column + '.toUpperCase().indexOf("' + options.search[i].value.toUpperCase() + '") !== -1';
+                            }
+                        } else {
+                            searchCondition += logic + 'cursor.value.' + options.search[i].column + '.toUpperCase() == "' + options.search[i].value.toUpperCase() + '"';
+                        }
+                        if (options.search[i].logic == 'OR') {
+                            logic = ' || ';
+                        } else {
+                            logic = ' && ';
+                        }
+                    }
+                }
+                var returnData = [];
+                var index = 0;
+                storeIndex.openCursor(keyBound, options.direction).onsuccess = function (event) {
+                    var cursor = event.target.result;
+                    if (cursor && ((options.limit != undefined && index < options.limit) || options.limit == undefined)) {
+                        if (searchCondition.trim().length > 0) {
+                            eval('if(' + searchCondition.trim() + '){ returnData.push(cursor.value); }');
+                        } else {
+                            if (((options.by_date && cursor.value.p_create_date == options.filter_date) || !options.by_date) && ((options.by_price && options.price_range[0] <= parseFloat(cursor.value.p_price_out) && options.price_range[1] >= parseFloat(cursor.value.p_price_out)) || !options.by_price)) {
+                                returnData.push(cursor.value);
+                            }
+                        }
+                        index += 1;
+                        cursor.continue();
+                    } else {
+                        var name_order = '';
+                        var code_order = '';
+                        if (options.name_order == 'DESC') {
+                            name_order = '-';
+                        }
+                        if (options.code_order == 'DESC') {
+                            code_order = '-';
+                        }
+                        if (options.by_name && options.by_code) {
+                            returnData.sort(aitIndexedDB.dynamicSortMultiple(name_order + 'p_name_it', code_order + 'p_code'));
+                        } else if (options.by_name) {
+                            returnData.sort(aitIndexedDB.dynamicSort(name_order + 'p_name_it'));
+                        } else if (options.by_code) {
+                            returnData.sort(aitIndexedDB.dynamicSort(code_order + 'p_code'));
+                        }
+                        aitApp.processing = 0;
+                        //call the extended function after the cursor is over
+                        if (options.postCallback) {
+                            options.postCallback(returnData);
+                        }
+                    }
+                };
+            }
+        },
+        dynamicSortMultiple: function () {
+            /*
+             * save the arguments object as it will be overwritten
+             * note that arguments object is an array-like object
+             * consisting of the names of the properties to sort by
+             */
+            var props = arguments;
+            return function (obj1, obj2) {
+                var i = 0, result = 0, numberOfProperties = props.length;
+                /* try getting a different result from 0 (equal)
+                 * as long as we have extra properties to compare
+                 */
+                while (result === 0 && i < numberOfProperties) {
+                    result = aitIndexedDB.dynamicSort(props[i])(obj1, obj2);
+                    i++;
+                }
+                return result;
+            }
+        },
+        dynamicSort: function (property) {
+            var sortOrder = 1;
+            if (property[0] === "-") {
+                sortOrder = -1;
+                property = property.substr(1);
+            }
+            return function (a, b) {
+                var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+                return result * sortOrder;
+            }
+        }
     };
+
 })();
