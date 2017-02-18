@@ -85,7 +85,7 @@ var aitIndexedDB = new aitIndexedDB({
 
 ## Available resources and methods
 
-### `readAll()`
+### `readAll()` - to Read multiple rows by keypath or any index with many conditions
 
 #### Arguments
 
@@ -132,7 +132,7 @@ aitIndexedDB.readAll({
 });
 ```
 
-### `read()`
+### `read()` - to read single row by keypath/primary key value
 
 #### Arguments
 
@@ -156,7 +156,7 @@ aitIndexedDB.read({
 });
 ```
 
-### `insert()`
+### `insert()` - to insert single row in an object store
 
 #### Arguments
 
@@ -180,7 +180,7 @@ aitIndexedDB.insert({
 });
 ```
 
-### `insertMultiple()`
+### `insertMultiple()` - to Inser multiple rows at the same time in an object store
 
 #### Arguments
 
@@ -207,7 +207,7 @@ aitIndexedDB.insertMultiple({
 });
 ```
 
-### `update()`
+### `update()` - to Update data in an object store
 
 #### Arguments
 
@@ -243,7 +243,7 @@ aitIndexedDB.insertMultiple({
 });
 ```
 
-### `delete()`
+### `delete()` - to Delete any data row from an object store by the primary key
 
 #### Arguments
 
@@ -267,7 +267,7 @@ aitIndexedDB.delete({
 });
 ```
 
-### `countAll()` - Total number of rows in an object store
+### `countAll()` - to get the Total number of rows in an object store
 
 #### Arguments
 
@@ -290,7 +290,7 @@ aitIndexedDB.delete({
 });
 ```
 
-### `deleteDatabase()` - Delete the database
+### `deleteDatabase()` - to Delete the database
 
 #### Arguments
 
