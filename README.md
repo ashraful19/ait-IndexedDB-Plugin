@@ -115,7 +115,7 @@ var aitIndexedDB = new aitIndexedDB({
 #### Example
 ```js
 aitIndexedDB.readAll({
-    storename: 'app_config',
+    storename: 'product',
     index: 'price',
     only: {value: ['50']}, // if you use `only`, `lowerbound` and `upperbound` won't be counted (if you use them too)
     lowerbound: {value: [25], notequal: false},
@@ -127,6 +127,176 @@ aitIndexedDB.readAll({
     ],
     postCallback: function (data) {
         //Do something with the result
+    }
+});
+```
+
+### `read()`
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `keyValue` - Required - The value of the keypath (Primary key)
+    - `postCallback` - Callback function that will receive the result array after the read operation is done.
+#### Example
+```js
+aitIndexedDB.read({
+    storename: 'product',
+    keyValue: 2,
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
+
+### `insert()`
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `data` - Required - The object we are going to store
+    - `postCallback` - Callback function that will receive the insert id.
+#### Example
+```js
+aitIndexedDB.insert({
+    storename: 'product',
+    data: {id: 3, name: 'test product 3', price: 59},
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
+
+### `insertMultiple()`
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `data` - Required - The Array of objects. each object is considered as each row to store.
+    - `postCallback` - Callback function that will receive the insert id.
+#### Example
+```js
+aitIndexedDB.insertMultiple({
+    storename: 'product',
+    data: [
+        {id: 3, name: 'test product 3', price: 59},
+        {id: 4, name: 'test product 4', price: 75}
+    ],
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
+
+### `update()`
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `data` - Required - The Array of objects. each object is considered as each row to store. if your stores keypath is autoincrement = true, then you must pass all the data of that row including the keypath
+    - `keyValue` - Optional - Only pass this value if your store keypath is not autoincrement = true. otherwise it will through error.
+    - `postCallback` - Callback function that will receive the insert id.
+#### Example
+```js
+aitIndexedDB.insertMultiple({
+    storename: 'product',
+    data: {id: 3, name: 'test product 3 name updated', price: 59},
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+
+// or if keypath is not autoincrement
+
+aitIndexedDB.insertMultiple({
+    storename: 'product',
+    data: {name: 'test product 3 name updated', price: 59},
+    keyValue: 3,
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
+
+### `delete()`
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `keyValue` - Required - the value of the keypath which you want to delete.
+    - `postCallback` - Callback function that will receive the insert id.
+#### Example
+```js
+aitIndexedDB.delete({
+    storename: 'product',
+    keyValue: 3,
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
+
+### `countAll()` - Total number of rows in an object store
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+
+    - `storename` - Required - A string that specifies the store name from where we are going to read data
+    - `postCallback` - Callback function that will receive the insert id.
+#### Example
+```js
+aitIndexedDB.delete({
+    storename: 'product',
+    keyValue: 3,
+    postCallback: function (data) {
+        //Do something with the result
+    }
+});
+```
+
+### `deleteDatabase()` - Delete the database
+
+#### Arguments
+
+    - `options` - Required - A plain JavaScript object that contains the
+    configuration options.
+    
+#### Options
+    - `postCallback` - Callback function that will receive the insert id.
+#### Example
+```js
+aitIndexedDB.deleteDatabase({
+    postCallback: function (data) {
+        // a response object will be received like `{status: 1, msg: 'Database deleted successfully'}`
     }
 });
 ```
