@@ -5,7 +5,7 @@
  * Copyright 2017, Ashraful Islam Tushar
  * Licensed under MIT
  *
- * Released on: TBA
+ * Released on: 18 Feb 2017
  */
 (function () {
     'use strict';
